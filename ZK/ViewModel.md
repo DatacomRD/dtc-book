@@ -9,12 +9,34 @@
 			`BaseMaintainViewModel`
 
 
-### BaseViewModel ###
+MVVM flow
+---------
+
+共用 ViewModel 倚賴 MVVM 的 init 與 afterCompose 機制來達到某些功能：
+
+* BaseViewModel：在 init 時取得 `Binder` 的 instance。
+* BaseEntityViewModel：在 afterCompose 時呼叫 `search()`。
+
+因此：
+
+* 繼承 `BaseViewModel` 的 child class 必須要有掛上 `@Init(superclass=true)` 的 method
+* 繼承 `BaseEntityViewModel` 的 child class 必須要有掛上 `@AfterCompose(superclass=true)` 的 method
+	* 當然，因為 `BaseEntityViewModel` 是 `BaseViewModel` 的 child class，
+		所以也必須要有掛上 `@Init(superclass=true)` 的 method
+
+並請注意，不要 override parent 的 init / afterCompose method，請取不同的 method 名稱。
+
+
+BaseViewModel
+-------------
+
 沒有什麼特殊功能，就 ZK 範圍的功能來說，就是提供以程式觸發 MVVM 的 method，
 例如 `notifyChange()`、`postCommand()` 等等。
 
 
-### BaseEntityViewModel ###
+BaseEntityViewModel
+-------------------
+
 開始跟 ZUL 有<strike>糾纏不清的</strike>關係了，所以先貼一下基本的頁面樣板：
 
 ```XML
@@ -94,7 +116,8 @@
 另外也幫你作掉「重設搜尋條件」的功能。
 
 
-#### tip ###
+### tip ###
+
 * `queryData()` 是沒有給任何搜尋條件的時候資料取得的方式。
 	`queryData(String, Map)` 是有給搜尋條件的時候資料取得的方式。
 * 重新載入資料：呼叫 `search()`。
@@ -108,11 +131,16 @@
 			getConstraint().put("studyDate_to", date);
 		}
 
-* 畫面載入時符合預設搜尋條件的資料：在 VM 的 constructor 呼叫 `afterResetSearch()`
-	（當然要有 override `afterResetSearch()`）。
+* 畫面載入時顯示符合預設搜尋條件的資料：
+	在 afterCompose method 觸發之前呼叫 `afterResetSearch()`
+	（當然要有 override `afterResetSearch()`）：
+	* constructor
+	* init method
 
 
-### BaseMaintainViewModel ###
+BaseMaintainViewModel
+---------------------
+
 `BaseMaintainViewModel` 繼承 `BaseEntityViewModel`，然後補上「編輯資料」的功能。
 也就是說，`BaseMaintainViewModel` 會幫忙 hold 住跟編輯資料有關的 UI 狀態，
 例如編輯區的狀態控制：
@@ -130,7 +158,9 @@
 也是 `BaseMaintainViewModel` 的防守範圍。
 
 
-### 子母 entity 的議題 ###
+子母 entity 的議題
+------------------
+
 有兩個 entity：`Parent`、`Child`，一個 `Parent` 底下可以有多個 `Child`，
 然後要在同一個頁面上同時維護 `Parent` 與 `Child` 的資料。
 
