@@ -2,6 +2,8 @@
 
 * dtc-core：https://github.com/MontyPan/dtc-core
 	* Java 基礎 library
+* dtc-dicom： *尚未公開*
+	* DICOM library、dcm4che wrapper
 * dtc-zk：https://github.com/MontyPan/dtc-zk
 	* ZK 專屬 library
 * dtc-book：https://github.com/MontyPan/dtc-book
